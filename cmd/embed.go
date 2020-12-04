@@ -1,4 +1,4 @@
-package embed
+package cmd
 
 import (
 	"bytes"
@@ -15,10 +15,23 @@ import (
 	"strings"
 
 	"github.com/shupkg/wbin"
+	"github.com/spf13/pflag"
 )
 
 func New() *Packer {
 	return (&Packer{}).Default()
+}
+
+func WithFlag(flag *pflag.FlagSet) *Packer {
+	p := New()
+	flag.StringVarP(&p.Import, "import", "i", p.Import, "导入「.Fs, .File」的包名")
+	flag.StringVarP(&p.Out, "out", "o", p.Out, "输出文件")
+	flag.StringVar(&p.Var, "var", p.Var, "变量命令前缀")
+	flag.StringSliceVar(&p.Filters, "exclude", p.Filters, "过滤规则，正则")
+	flag.StringSliceVar(&p.Files, "file", p.Files, "要嵌入的文件")
+	flag.BoolVarP(&p.Force, "force", "f", p.Force, "覆盖输出文件（如果已存在）")
+	flag.BoolVarP(&p.Verbose, "verbose", "v", p.Verbose, "输出过程信息")
+	return p
 }
 
 type Packer struct {
